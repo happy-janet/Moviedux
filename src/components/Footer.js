@@ -8,7 +8,7 @@ export default function Footer(){
     return(
     <footer className='footer'>
         <p className='footer-text'>
-        © {currentYear} Aballo Janet, All rights reserved
+        © {currentYear} Aballo Janet $ Scovia Katusabe, All rights reserved
         </p>
     </footer>
     );

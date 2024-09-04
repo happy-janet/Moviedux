@@ -16,6 +16,17 @@ body {
   max-width: 1200px;
   margin: 0 auto;
 }
+/* src/styles.css */
+.movie-player {
+  text-align: center;
+  padding: 20px;
+}
+
+.movie-player iframe {
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
+}
 
 /* Header Styles */
 .header {
@@ -248,4 +259,147 @@ input:checked + .slider:before {
 
 input:checked + .slider {
   background-color: #FFA100;
+}
+.watch-now-button {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #f76c6c; /* Adjust as needed */
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.watch-now-button:hover {
+  background-color: #d74f5c; /* Adjust as needed */
+}
+/* Add this to your styles.css */
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+}
+
+.modal iframe {
+  width: 100%;
+  height: 315px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+/* Modal container - covers the entire viewport */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8); /* Dark background for overlay */
+  z-index: 1000;
+  overflow: auto; /* Ensure the modal content is scrollable if needed */
+}
+
+/* Modal content - the area that holds the iframe and close button */
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  max-width: 90%; /* Ensure the content is responsive */
+  max-height: 90%; /* Ensure the content is responsive */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+}
+
+/* Modal iframe - set dimensions and make it responsive */
+.modal iframe {
+  width: 100%;
+  height: 315px;
+  border: none; /* Remove default border */
+}
+
+/* Close button - positioned in the top right corner of the modal */
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333; /* Set close button color */
+}
+
+/* Ensure the close button is visually distinct and clickable */
+.close:hover {
+  color: #f00; /* Change color on hover */
+}
+
+/* Optional: Styling for clicking outside the modal to close it */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent; /* Allow clicks to pass through */
+}
+/* styles.css */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it is on top of other elements */
+}
+
+.modal-content {
+  position: relative;
+  background: #000;
+  padding: 0;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 1001; /* Ensure it is on top of other elements */
+}
+
+iframe {
+  width: 100%;
+  height: 450px;
 }

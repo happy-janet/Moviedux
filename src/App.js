@@ -1,22 +1,65 @@
-import logo from "./logo.svg";
-import "./App.css";
-import "./styles.css";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import MoviesGrid from "./components/MoviesGrid";
-import Watchlist from "./components/Watchlist";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { useState, useEffect } from "react"; //this enables us to acess all react functionalities that we may need
+// src/App.js
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import MoviesGrid from './components/MoviesGrid';
+import Watchlist from './components/Watchlist';
+// import MoviePlayer from './components/MoviePlayer'; // Import MoviePlayer
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 function App() {
   const [movies, setMovies] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [genre, setGenre] = useState('All Genres');
+  const [rating, setRating] = useState('All');
 
   useEffect(() => {
-    fetch("movies.json")
-      .then((response) => response.json())
-      .then((data) => setMovies(data));
+    fetchDefaultMovies();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      fetchMoviesBySearch();
+    } else {
+      fetchDefaultMovies();
+    }
+  }, [searchTerm, genre, rating]);
+
+  const fetchDefaultMovies = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/movies/default/');
+      const data = await response.json();
+      setMovies(data.results);
+    } catch (error) {
+      console.error('Error fetching default movies:', error);
+    }
+  };
+
+  const fetchMoviesBySearch = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/movies/search/?query=${searchTerm}`
+      );
+      const data = await response.json();
+      setMovies(data.results);
+    } catch (error) {
+      console.error('Error fetching movies by search:', error);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleGenreChange = (e) => {
+    setGenre(e.target.value);
+  };
+
+  const handleRatingChange = (e) => {
+    setRating(e.target.value);
+  };
 
   const toggleWatchlist = (movieId) => {
     setWatchlist((prev) =>
@@ -29,7 +72,7 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <Header></Header>
+        <Header />
 
         <Router>
           <nav>
@@ -51,9 +94,15 @@ function App() {
                   watchlist={watchlist}
                   movies={movies}
                   toggleWatchlist={toggleWatchlist}
+                  searchTerm={searchTerm}
+                  genre={genre}
+                  rating={rating}
+                  handleSearchChange={handleSearchChange}
+                  handleGenreChange={handleGenreChange}
+                  handleRatingChange={handleRatingChange}
                 />
               }
-            ></Route>
+            />
             <Route
               path="/watchlist"
               element={
@@ -63,12 +112,15 @@ function App() {
                   toggleWatchlist={toggleWatchlist}
                 />
               }
-            ></Route>
+            />
+            <Route
+              
+            />
           </Routes>
         </Router>
       </div>
 
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 }

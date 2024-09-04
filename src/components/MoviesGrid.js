@@ -1,56 +1,87 @@
-import React, { useState } from "react"; //this enables us to acess all react functionalities that we may need
-import "../styles.css";
-import MovieCard from "./MovieCard";
+import React, { useState, useEffect } from 'react';
+import '../styles.css';
+import MovieCard from './MovieCard';
 
-export default function MoviesGrid({ movies, watchlist, toggleWatchlist }) {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function MoviesGrid({
+  movies,
+  watchlist,
+  toggleWatchlist,
+  searchTerm,
+  handleSearchChange,
+  genre,
+  handleGenreChange,
+  rating,
+  handleRatingChange,
+}) {
+  const [movieDetails, setMovieDetails] = useState([]);
 
-  const [genre, setGenre] = useState("All Genres");
-  const [rating, setRating] = useState("All");
+  // Fetch movie details including YouTube URLs and top cast
+  useEffect(() => {
+    const fetchMovieDetails = async () => {
+      try {
+        const updatedMovies = await Promise.all(
+          movies.map(async (movie) => {
+            // Fetch YouTube videos
+            const videoResponse = await fetch(
+              `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=b482d5d15eea5207ec4eb7e49570a8e6`
+            );
+            const videoData = await videoResponse.json();
+            const youtubeUrl = videoData.results.find((video) => video.site === 'YouTube')
+              ? `https://www.youtube.com/embed/${videoData.results.find(
+                  (video) => video.site === 'YouTube'
+                ).key}`
+              : null;
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+            // Fetch cast information
+            const castResponse = await fetch(
+              `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=b482d5d15eea5207ec4eb7e49570a8e6`
+            );
+            const castData = await castResponse.json();
+            const topCast = castData.cast
+              .slice(0, 5) // Get the top 5 cast members
+              .map((actor) => actor.name)
+              .join(', ');
+
+            return {
+              ...movie,
+              youtube_url: youtubeUrl,
+              topCast: topCast || 'Unknown Artists', // Add top cast to movie details
+            };
+          })
+        );
+        setMovieDetails(updatedMovies);
+      } catch (error) {
+        console.error('Error fetching movie details:', error);
+      }
+    };
+
+    fetchMovieDetails();
+  }, [movies]);
 
   const matchesSearchTerm = (movie, searchTerm) => {
     return movie.title.toLowerCase().includes(searchTerm.toLowerCase());
   };
 
-  const handleGenreChange = (e) => {
-    setGenre(e.target.value);
-  };
-
-  const handleRatingChange = (e) => {
-    setRating(e.target.value);
-  };
-
   const matchesGenre = (movie, genre) => {
-    return (
-      genre === "All Genres" ||
-      movie.genre.toLowerCase() === genre.toLowerCase()
-    );
+    return genre === 'All Genres' || movie.genre.toLowerCase() === genre.toLowerCase();
   };
 
   const matchesRating = (movie, rating) => {
     switch (rating) {
-      case "All":
+      case 'All':
         return true;
-
-      case "Good":
+      case 'Good':
         return movie.rating >= 8;
-
-      case "Ok":
+      case 'Ok':
         return movie.rating >= 5 && movie.rating < 8;
-
-      case "Bad":
+      case 'Bad':
         return movie.rating < 5;
-
       default:
         return false;
     }
   };
 
-  const filteredMovies = movies.filter(
+  const filteredMovies = movieDetails.filter(
     (movie) =>
       matchesGenre(movie, genre) &&
       matchesRating(movie, rating) &&
@@ -66,15 +97,10 @@ export default function MoviesGrid({ movies, watchlist, toggleWatchlist }) {
         value={searchTerm}
         onChange={handleSearchChange}
       />
-
       <div className="filter-bar">
         <div className="filter-slot">
           <label>Genre</label>
-          <select
-            className="filter-dropdown"
-            value={genre}
-            onChange={handleGenreChange}
-          >
+          <select className="filter-dropdown" value={genre} onChange={handleGenreChange}>
             <option>All Genres</option>
             <option>Action</option>
             <option>Drama</option>
@@ -84,11 +110,7 @@ export default function MoviesGrid({ movies, watchlist, toggleWatchlist }) {
         </div>
         <div className="filter-slot">
           <label>Rating</label>
-          <select
-            className="filter-dropdown"
-            value={rating}
-            onChange={handleRatingChange}
-          >
+          <select className="filter-dropdown" value={rating} onChange={handleRatingChange}>
             <option>All</option>
             <option>Good</option>
             <option>Ok</option>
@@ -96,16 +118,19 @@ export default function MoviesGrid({ movies, watchlist, toggleWatchlist }) {
           </select>
         </div>
       </div>
-
       <div className="movies-grid">
-        {filteredMovies.map((movie) => (
-          <MovieCard
-            movie={movie}
-            key={movie.id}
-            toggleWatchlist={toggleWatchlist}
-            isWatchlisted={watchlist.includes(movie.id)}
-          ></MovieCard>
-        ))}
+        {filteredMovies.length === 0 ? (
+          <p>No movies found</p>
+        ) : (
+          filteredMovies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              toggleWatchlist={toggleWatchlist}
+              isWatchlisted={watchlist.includes(movie.id)}
+            />
+          ))
+        )}
       </div>
     </div>
   );
